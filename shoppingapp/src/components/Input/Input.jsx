@@ -2,23 +2,64 @@ import React, { useReducer } from "react";
 import { useState } from "react";
 import classes from "./Input.module.css";
 import { MdModeEditOutline } from "react-icons/md";
-import { BsFillTrash2Fill } from "react-icons/bs";
+import {
+  BsFillTrash2Fill,
+  BsCheckCircleFill,
+  BsFillCalendar2WeekFill,
+  BsPhone,
+} from "react-icons/bs";
 import { HiShoppingCart } from "react-icons/hi";
 import { IoMdPricetag } from "react-icons/io";
+// import { IoPhonePortraitOutline } from "react-icons/io";
+import { TbDotsCircleHorizontal } from "react-icons/tb";
+import {
+  FaAppleAlt,
+  FaCar,
+  FaMoneyBillWave,
+  FaDog,
+  FaTv,
+  FaTshirt,
+  FaHome,
+} from "react-icons/fa";
 
 function Input() {
   const [inputValue, setInputValue] = useState();
   const [InputPrice, setInputPrice] = useState();
+  // const [icon, setIcon] = useState(
+  //   <HiShoppingCart style={{ marginRight: "0.5rem" }} />
+  // );
 
-  const newproduct = function (name, price) {
-    return { id: Date.now(), name: name, price: price, complete: false };
+  const icons = {
+    apple: <FaAppleAlt className={classes.ic} />,
+    car: <FaCar className={classes.ic} />,
+    money: <FaMoneyBillWave className={classes.ic} />,
+    calendar: <BsFillCalendar2WeekFill className={classes.ic} />,
+    animal: <FaDog className={classes.ic} />,
+    phone: <HiShoppingCart className={classes.ic} />,
+    tv: <FaTv className={classes.ic} />,
+    home: <FaHome className={classes.ic} />,
+    cloth: <FaTshirt className={classes.ic} />,
+  };
+
+  const newproduct = function (name, price, icon) {
+    return {
+      id: Date.now(),
+      name: name,
+      price: price,
+      complete: false,
+      iconShow: false,
+      icon: <HiShoppingCart />,
+    };
   };
 
   const reducer = function (state, action) {
     if (action.type === "ADD") {
       let updatedName = newproduct(action.payload.name, action.payload.price);
 
-      return [...state, updatedName];
+      if (action.payload.name && action.payload.price) {
+        console.log(updatedName, ...state);
+        return [updatedName, ...state];
+      }
     }
     if (action.type === "DELETE") {
       state = state.filter((item) => item.id !== action.payload.id);
@@ -29,7 +70,23 @@ function Input() {
         if (item.id === action.payload.id) {
           return { ...item, complete: !item.complete };
         }
-        console.log(item);
+        return item;
+      });
+    }
+    if (action.type === "ICONS") {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, iconShow: !item.iconShow };
+        }
+        return item;
+      });
+    }
+    if (action.type === "ICON") {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, icon: action.payload.icon };
+        }
+        console.log(item.icon);
         return item;
       });
     }
@@ -67,41 +124,162 @@ function Input() {
         </form>
         <div className={classes.mother}>
           {state.map((item) => (
-            <div
-              className={classes.container}
-              key={Math.random()}
-              style={{ color: item.complete ? "#AAA" : "#000" }}
-              onClick={() =>
-                dispatch({ type: "DONE", payload: { id: item.id } })
-              }
-            >
-              <span className={classes.whole}>
-                <div className={classes.info}>
-                  <p>
-                    <HiShoppingCart style={{ marginRight: "0.5rem" }} />
-                    Product: {item.name}
-                  </p>
-                  <p>
-                    <IoMdPricetag style={{ marginRight: "0.5rem" }} />
-                    Price: ${item.price}
-                  </p>
-                </div>
-                <div className={classes.icons}>
-                  <MdModeEditOutline
-                    style={{ fontSize: "1.3rem", cursor: " pointer" }}
-                  />
-                  <BsFillTrash2Fill
-                    style={{ fontSize: "1.3rem", cursor: " pointer" }}
-                    onClick={() =>
-                      dispatch({ type: "DELETE", payload: { id: item.id } })
-                    }
-                  />
-                  <div className={classes.select}>
-                    <p>S</p>
+            <>
+              <div
+                className={classes.container}
+                key={Math.random()}
+                style={{ color: item.complete ? "#AAA" : "#000" }}
+              >
+                {item.iconShow ? (
+                  <div className={classes.selectIcon}>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.apple },
+                        })
+                      }
+                    >
+                      {icons.apple}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.animal },
+                        })
+                      }
+                    >
+                      {icons.animal}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.calendar },
+                        })
+                      }
+                    >
+                      {" "}
+                      {icons.calendar}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.car },
+                        })
+                      }
+                    >
+                      {icons.car}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.cloth },
+                        })
+                      }
+                    >
+                      {icons.cloth}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.home },
+                        })
+                      }
+                    >
+                      {icons.home}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.money },
+                        })
+                      }
+                    >
+                      {icons.money}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.phone },
+                        })
+                      }
+                    >
+                      {icons.phone}
+                    </div>
+                    <div
+                      className={classes.parent}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICON",
+                          payload: { id: item.id, icon: icons.tv },
+                        })
+                      }
+                    >
+                      {icons.tv}
+                    </div>
                   </div>
-                </div>
-              </span>
-            </div>
+                ) : (
+                  ""
+                )}
+                <span className={classes.whole}>
+                  <div className={classes.info}>
+                    <p>
+                      {item.icon}
+                      Product: {item.name}
+                    </p>
+                    <p>
+                      <IoMdPricetag />
+                      Price: ${item.price}
+                    </p>
+                  </div>
+                  <div className={classes.icons}>
+                    <MdModeEditOutline
+                      style={{ fontSize: "1.3rem", cursor: " pointer" }}
+                    />
+                    <BsFillTrash2Fill
+                      style={{ fontSize: "1.3rem", cursor: " pointer" }}
+                      onClick={() =>
+                        dispatch({ type: "DELETE", payload: { id: item.id } })
+                      }
+                    />
+                    <BsCheckCircleFill
+                      style={{ fontSize: "1.3rem", cursor: " pointer" }}
+                      onClick={() =>
+                        dispatch({ type: "DONE", payload: { id: item.id } })
+                      }
+                    />
+                    <TbDotsCircleHorizontal
+                      style={{
+                        fontSize: "1.5rem",
+                        cursor: " pointer",
+                        marginLeft: "0.7rem",
+                      }}
+                      onClick={() =>
+                        dispatch({
+                          type: "ICONS",
+                          payload: { id: item.id },
+                        })
+                      }
+                    />
+                  </div>
+                </span>
+              </div>
+            </>
           ))}
         </div>
       </div>
