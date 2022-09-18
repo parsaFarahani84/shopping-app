@@ -7,44 +7,42 @@ import { HiShoppingCart } from "react-icons/hi";
 import { IoMdPricetag } from "react-icons/io";
 
 function Input() {
-  const [data, setData] = useState([]);
   const [inputValue, setInputValue] = useState();
   const [InputPrice, setInputPrice] = useState();
 
-  const newproduct = function (name) {
-    return { id: Date.now(), name: name };
+  const newproduct = function (name, price) {
+    return { id: Date.now(), name: name, price: price, complete: false };
   };
 
   const reducer = function (state, action) {
-    if ((action.type = "ADD")) {
-      let updatedName = newproduct(action.payload.name);
-      let updatedPrice = state.price;
-      state = [
-        ...state,
-        {
-          name: updatedName,
-          price: updatedPrice,
-        },
-      ];
-      console.log(state);
+    if (action.type === "ADD") {
+      let updatedName = newproduct(action.payload.name, action.payload.price);
+
+      return [...state, updatedName];
     }
-    if ((action.type = "")) {
+    if (action.type === "DELETE") {
+      state = state.filter((item) => item.id !== action.payload.id);
+      return state;
+    }
+    if (action.type === "DONE") {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, complete: !item.complete };
+        }
+        console.log(item);
+        return item;
+      });
     }
 
-    return data;
+    return state;
   };
-  const [state, dispatch] = useReducer(reducer, data);
+
+  const [state, dispatch] = useReducer(reducer, []);
 
   const submitHandler = function (e) {
     e.preventDefault();
     dispatch({ type: "ADD", payload: { name: inputValue, price: InputPrice } });
-    setData([
-      {
-        name: inputValue,
-        price: InputPrice,
-      },
-      ...data,
-    ]);
+
     setInputValue("");
     setInputPrice("");
   };
@@ -69,7 +67,14 @@ function Input() {
         </form>
         <div className={classes.mother}>
           {state.map((item) => (
-            <div className={classes.container} key={Math.random()}>
+            <div
+              className={classes.container}
+              key={Math.random()}
+              style={{ color: item.complete ? "#AAA" : "#000" }}
+              onClick={() =>
+                dispatch({ type: "DONE", payload: { id: item.id } })
+              }
+            >
               <span className={classes.whole}>
                 <div className={classes.info}>
                   <p>
@@ -87,6 +92,9 @@ function Input() {
                   />
                   <BsFillTrash2Fill
                     style={{ fontSize: "1.3rem", cursor: " pointer" }}
+                    onClick={() =>
+                      dispatch({ type: "DELETE", payload: { id: item.id } })
+                    }
                   />
                   <div className={classes.select}>
                     <p>S</p>
