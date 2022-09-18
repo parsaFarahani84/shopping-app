@@ -41,7 +41,7 @@ function Input() {
     cloth: <FaTshirt className={classes.ic} />,
   };
 
-  const newproduct = function (name, price, icon) {
+  const newproduct = function (name, price) {
     return {
       id: Date.now(),
       name: name,
@@ -57,7 +57,7 @@ function Input() {
       let updatedName = newproduct(action.payload.name, action.payload.price);
 
       if (action.payload.name && action.payload.price) {
-        console.log(updatedName, ...state);
+        // console.log(updatedName, ...state);
         return [updatedName, ...state];
       }
     }
@@ -90,14 +90,29 @@ function Input() {
         return item;
       });
     }
+    // if (action.type === "EDIT") {
+    //   return state.map((item) => {
+    //     if (action.payload.id === item.id) {
+    //       console.log(item);
+    //     }
+
+    //     return item;
+    //   });
+    // }
 
     return state;
   };
 
   const [state, dispatch] = useReducer(reducer, []);
+  const [edit, setEdit] = useState({
+    id: null,
+    name: "",
+    price: "",
+  });
 
   const submitHandler = function (e) {
     e.preventDefault();
+
     dispatch({ type: "ADD", payload: { name: inputValue, price: InputPrice } });
 
     setInputValue("");
@@ -108,28 +123,26 @@ function Input() {
     <div className={classes.main}>
       <div>
         <form onSubmit={submitHandler} className={classes.input}>
-          <input
-            type="text"
-            placeholder="Please write the product"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Please write the price"
-            value={InputPrice}
-            onChange={(e) => setInputPrice(e.target.value)}
-          />
-          <button className={classes.addbtn}>Add</button>
+          <>
+            <input
+              type="text"
+              placeholder="Please enter the product"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Please enter the price"
+              value={InputPrice}
+              onChange={(e) => setInputPrice(e.target.value)}
+            />
+            <button className={classes.addbtn}>Add</button>
+          </>
         </form>
         <div className={classes.mother}>
           {state.map((item) => (
-            <>
-              <div
-                className={classes.container}
-                key={Math.random()}
-                style={{ color: item.complete ? "#AAA" : "#000" }}
-              >
+            <div style={{ opacity: item.complete ? "0.5" : "1" }}>
+              <div className={classes.container} key={Math.random()}>
                 {item.iconShow ? (
                   <div className={classes.selectIcon}>
                     <div
@@ -250,6 +263,16 @@ function Input() {
                   <div className={classes.icons}>
                     <MdModeEditOutline
                       style={{ fontSize: "1.3rem", cursor: " pointer" }}
+                      onClick={() =>
+                        dispatch({
+                          type: "EDIT",
+                          payload: {
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                          },
+                        })
+                      }
                     />
                     <BsFillTrash2Fill
                       style={{ fontSize: "1.3rem", cursor: " pointer" }}
@@ -279,7 +302,7 @@ function Input() {
                   </div>
                 </span>
               </div>
-            </>
+            </div>
           ))}
         </div>
       </div>
