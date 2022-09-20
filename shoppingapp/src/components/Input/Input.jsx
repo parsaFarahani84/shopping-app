@@ -1,7 +1,6 @@
 import React, { useReducer } from "react";
 import { useState } from "react";
 import classes from "./Input.module.css";
-import { MdModeEditOutline } from "react-icons/md";
 import {
   BsFillTrash2Fill,
   BsCheckCircleFill,
@@ -25,9 +24,6 @@ import {
 function Input() {
   const [inputValue, setInputValue] = useState();
   const [InputPrice, setInputPrice] = useState();
-  // const [icon, setIcon] = useState(
-  //   <HiShoppingCart style={{ marginRight: "0.5rem" }} />
-  // );
 
   const icons = {
     apple: <FaAppleAlt className={classes.ic} />,
@@ -57,7 +53,6 @@ function Input() {
       let updatedName = newproduct(action.payload.name, action.payload.price);
 
       if (action.payload.name && action.payload.price) {
-        // console.log(updatedName, ...state);
         return [updatedName, ...state];
       }
     }
@@ -84,31 +79,25 @@ function Input() {
     if (action.type === "ICON") {
       return state.map((item) => {
         if (item.id === action.payload.id) {
-          return { ...item, icon: action.payload.icon };
+          return { ...item, icon: action.payload.icon, iconShow: false };
         }
         console.log(item.icon);
         return item;
       });
     }
-    // if (action.type === "EDIT") {
-    //   return state.map((item) => {
-    //     if (action.payload.id === item.id) {
-    //       console.log(item);
-    //     }
-
-    //     return item;
-    //   });
-    // }
+    if (action.type === "EDIT") {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          console.log(action.payload.id, item.id);
+        }
+        return item;
+      });
+    }
 
     return state;
   };
 
   const [state, dispatch] = useReducer(reducer, []);
-  const [edit, setEdit] = useState({
-    id: null,
-    name: "",
-    price: "",
-  });
 
   const submitHandler = function (e) {
     e.preventDefault();
@@ -139,6 +128,7 @@ function Input() {
             <button className={classes.addbtn}>Add</button>
           </>
         </form>
+
         <div className={classes.mother}>
           {state.map((item) => (
             <div style={{ opacity: item.complete ? "0.5" : "1" }}>
@@ -261,19 +251,6 @@ function Input() {
                     </p>
                   </div>
                   <div className={classes.icons}>
-                    <MdModeEditOutline
-                      style={{ fontSize: "1.3rem", cursor: " pointer" }}
-                      onClick={() =>
-                        dispatch({
-                          type: "EDIT",
-                          payload: {
-                            id: item.id,
-                            name: item.name,
-                            price: item.price,
-                          },
-                        })
-                      }
-                    />
                     <BsFillTrash2Fill
                       style={{ fontSize: "1.3rem", cursor: " pointer" }}
                       onClick={() =>
